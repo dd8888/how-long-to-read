@@ -24,15 +24,17 @@ export const Input = ({
     ["books", debouncedTitle],
     () => BooksServices.getBooks({ title: debouncedTitle }),
     {
-      enabled: !!debouncedTitle,
+      enabled: !!debouncedTitle && title !== "",
       onSuccess: () => setIsOpenDropdown(true),
       refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
     }
   );
 
   return (
     <div
-      className="relative flex flex-col items-center w-full max-w-2xl space-y-1 "
+      className="relative z-20 flex flex-col items-center w-full max-w-2xl space-y-1"
       onBlur={(e) => {
         if (e.relatedTarget?.id !== "page-row") {
           setIsOpenDropdown(false);
@@ -44,7 +46,7 @@ export const Input = ({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         className="w-full h-10 p-2 rounded-md select-all"
-        onFocus={() => refetch()}
+        onFocus={() => !!debouncedTitle && refetch()}
         placeholder="Search books by title..."
       />
       {(isLoading || isFetching) && title && (
@@ -76,7 +78,7 @@ export const Input = ({
                         book.volumeInfo.imageLinks?.smallThumbnail
                       }
                       alt={`${title} cover`}
-                      className="object-contain h-32 col-span-1"
+                      className="object-contain h-32 col-span-1 max-w-[83px]"
                       onError={(e) => console.log(e)}
                     />
                   ) : (
@@ -90,9 +92,18 @@ export const Input = ({
                     />
                   )}
                   <div className="flex flex-col col-span-3">
-                    <span>{book.volumeInfo.title}</span>
-                    <span>{book.volumeInfo.publishedDate}</span>
-                    <span>{book.volumeInfo.pageCount ?? "?"} pages</span>
+                    <span className="text-lg font-bold">
+                      {book.volumeInfo.title}
+                    </span>
+                    <span className="text-sm">
+                      {book.volumeInfo?.authors?.join(", ")}
+                    </span>
+                    <span className="text-sm">
+                      {book.volumeInfo.publishedDate}
+                    </span>
+                    <span className="text-sm">
+                      {book.volumeInfo.pageCount ?? "?"} pages
+                    </span>
                   </div>
                 </div>
               )}
