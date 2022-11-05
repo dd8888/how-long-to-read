@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 html,
 body {
   padding: 0;
@@ -15,12 +18,37 @@ a {
   box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+html {
+  color-scheme: dark;
+}
+body {
+  @apply text-white bg-stone-900 selection:bg-black selection:text-white;
+}
+
+.page-wrapper .page-animation:nth-child(1) {
+  animation-delay: 0.2s;
+}
+.page-wrapper .page-animation:nth-child(2) {
+  animation-delay: 0.4s;
+}
+.page-wrapper .page-animation:nth-child(3) {
+  animation-delay: 0.6s;
+}
+.page-wrapper .page-animation:nth-child(4) {
+  animation-delay: 0.8s;
+}
+
+.page-animation {
+  transform-origin: right;
+
+  animation: 0.8s infinite pageRotate;
+}
+
+@keyframes pageRotate {
+  from {
+    transform: rotate(0deg);
   }
-  body {
-    color: white;
-    background: black;
+  to {
+    transform: rotate(180deg);
   }
 }
