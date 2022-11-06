@@ -12,12 +12,18 @@ import { Input } from "../components/Input";
 import { Options } from "../components/Options";
 import { Book } from "../services/BooksServices";
 import { getReadingTime } from "../utils/functions/getReadingTime";
+import { useDebounce } from "../utils/hooks/useDebounce";
 const roboto = Roboto_Slab({ subsets: ["latin"] });
 
 dayjs.extend(duration);
+export type ReadingSpeed = "slow" | "normal" | "fast";
 
 export default function Home() {
   const [selectedBook, setSelectedBook] = useState<Book>();
+  const [selectedSpeed, setSelectedSpeed] = useState<ReadingSpeed>("normal");
+  const [readingTime, setReadingTime] = useState(60);
+  const debouncedReadingTime = useDebounce(readingTime, 500);
+
   return (
     <div>
       <Head>
@@ -91,7 +97,10 @@ export default function Home() {
                     transition={{ type: "spring", duration: 1, delay: 0 }}
                   >
                     <CountUp
-                      end={getReadingTime(selectedBook.volumeInfo.pageCount)}
+                      end={getReadingTime(
+                        selectedBook.volumeInfo.pageCount,
+                        selectedSpeed
+                      )}
                       delay={0}
                       useEasing={true}
                     >
@@ -115,7 +124,10 @@ export default function Home() {
                       end={parseFloat(
                         dayjs
                           .duration(
-                            getReadingTime(selectedBook.volumeInfo.pageCount),
+                            getReadingTime(
+                              selectedBook.volumeInfo.pageCount,
+                              selectedSpeed
+                            ),
                             "minutes"
                           )
                           .asHours()
@@ -140,14 +152,10 @@ export default function Home() {
                     transition={{ type: "spring", duration: 1, delay: 0.3 }}
                   >
                     <CountUp
-                      end={parseFloat(
-                        dayjs
-                          .duration(
-                            getReadingTime(selectedBook.volumeInfo.pageCount),
-                            "minutes"
-                          )
-                          .asDays()
-                          .toFixed(2)
+                      end={getReadingTime(
+                        selectedBook.volumeInfo.pageCount,
+                        selectedSpeed,
+                        debouncedReadingTime
                       )}
                       decimals={2}
                     >
@@ -164,7 +172,11 @@ export default function Home() {
                   </motion.div>
                 </div>
               </div>
-              <Options />
+              <Options
+                setSelectedSpeed={setSelectedSpeed}
+                setReadingTime={setReadingTime}
+                readingTime={readingTime}
+              />
             </div>
           )}
         </div>
