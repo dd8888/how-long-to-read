@@ -81,7 +81,7 @@ export default function Home() {
                   onError={(e) => console.log(e)}
                 />
               )}
-              <div className="flex flex-col h-full col-span-8 p-4 rounded-md bg-stone-800">
+              <div className="flex flex-col items-stretch h-full col-span-8 p-4 rounded-md bg-stone-100 text-stone-900">
                 <div className="flex flex-col space-y-1">
                   <span className="text-lg font-semibold text-center ">
                     {selectedBook.volumeInfo.title}
@@ -103,6 +103,7 @@ export default function Home() {
                       )}
                       delay={0}
                       useEasing={true}
+                      preserveValue
                     >
                       {({ countUpRef }) => (
                         <div>
@@ -134,6 +135,9 @@ export default function Home() {
                           .toFixed(2)
                       )}
                       decimals={2}
+                      delay={0}
+                      useEasing={true}
+                      preserveValue
                     >
                       {({ countUpRef }) => (
                         <div>
@@ -158,6 +162,9 @@ export default function Home() {
                         debouncedReadingTime
                       )}
                       decimals={2}
+                      delay={0}
+                      useEasing={true}
+                      preserveValue
                     >
                       {({ countUpRef }) => (
                         <div>
@@ -170,6 +177,19 @@ export default function Home() {
                       )}
                     </CountUp>
                   </motion.div>
+                </div>
+                <div className="flex flex-col self-end w-full space-y-1">
+                  <span className="text-sm font-semibold text-right">
+                    How much time do you plan to read per day? (in minutes)
+                  </span>
+                  <input
+                    type="number"
+                    min={1}
+                    value={readingTime}
+                    onChange={(e) => setReadingTime(parseFloat(e.target.value))}
+                    className="w-full h-10 p-2 text-white rounded-md select-all"
+                    placeholder="90"
+                  />
                 </div>
               </div>
               <Options
