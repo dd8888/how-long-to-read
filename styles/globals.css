@@ -53,7 +53,7 @@ body {
 .page-animation {
   transform-origin: right;
 
-  animation: 1.4s infinite ease-in-out pageRotate;
+  animation: var(--page-duration) infinite ease-in-out pageRotate;
 }
 
 @keyframes pageRotate {
