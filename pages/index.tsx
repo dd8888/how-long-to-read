@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { motion } from "framer-motion";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CountUp from "react-countup";
 import { Input } from "../components/Input";
 import { Options } from "../components/Options";
@@ -23,6 +23,18 @@ export default function Home() {
   const [selectedSpeed, setSelectedSpeed] = useState<ReadingSpeed>("normal");
   const [readingTime, setReadingTime] = useState(60);
   const debouncedReadingTime = useDebounce(readingTime, 500);
+  const [imageHeight, setImageHeight] = useState<number | undefined>(0);
+  useEffect(() => {
+    console.log(document.getElementById("book-cover")?.clientHeight);
+    const handleResize = () => {
+      setImageHeight(document.getElementById("book-cover")?.clientHeight);
+    };
+    if (typeof window !== "undefined") {
+      window.addEventListener("resize", handleResize);
+    }
+    handleResize();
+    return () => window.removeEventListener("resize", () => handleResize());
+  }, [selectedBook]);
 
   return (
     <div>
@@ -42,12 +54,10 @@ export default function Home() {
           {selectedBook && (
             <div className="flex flex-col w-full gap-10 sm:grid sm:grid-cols-12 sm:max-w-2xl">
               {selectedBook.volumeInfo.imageLinks?.thumbnail ? (
-                <div className="relative flex items-start justify-start w-full col-span-4">
+                <div className="relative items-start justify-start hidden w-full h-full col-span-4 sm:flex">
                   <img
-                    src={
-                      selectedBook.volumeInfo.imageLinks?.thumbnail ??
-                      selectedBook.volumeInfo.imageLinks?.smallThumbnail
-                    }
+                    id="book-cover"
+                    src={selectedBook.volumeInfo.imageLinks?.thumbnail}
                     alt={`${selectedBook.volumeInfo.title} cover`}
                     className="rounded-sm z-10 object-contain w-full -rotate-3 shadow-black hover:[transform-origin:left] hover:[transform:rotate3d(0,1,0,340deg)_rotate(-3deg)_translateY(5px)]"
                     style={{
@@ -56,20 +66,18 @@ export default function Home() {
                     }}
                   />
                   <img
-                    src={
-                      selectedBook.volumeInfo.imageLinks?.thumbnail ??
-                      selectedBook.volumeInfo.imageLinks?.smallThumbnail
-                    }
-                    alt={`${selectedBook.volumeInfo.title} cover`}
-                    className="rounded-sm absolute object-contain w-full h-[calc(100%-5px)] grayscale -rotate-3 -right-3 top-0.5"
+                    src={selectedBook.volumeInfo.imageLinks?.thumbnail}
+                    alt={`${selectedBook.volumeInfo.title} back cover`}
+                    className="rounded-sm absolute object-contain w-full max-h-[calc(100%-5px)] grayscale -rotate-3 -right-3 top-0.5"
                   />
                   <div
-                    className="rounded-sm absolute object-contain w-full h-[calc(100%-15px)] -rotate-3 -right-2 top-2"
+                    className="absolute object-contain w-full h-full rounded-sm -rotate-3 -right-2 top-2"
                     style={{
+                      height: imageHeight ? imageHeight - 10 : "100%",
                       background:
                         "repeating-linear-gradient(to right,black,white 1px,black 2px)",
                     }}
-                  ></div>
+                  />
                 </div>
               ) : (
                 <img
@@ -77,7 +85,7 @@ export default function Home() {
                   alt={`${selectedBook.volumeInfo.title} cover`}
                   height={83}
                   width={128}
-                  className="object-cover w-full rounded-md"
+                  className="hidden object-cover w-full h-full col-span-4 rounded-md sm:block"
                   onError={(e) => console.log(e)}
                 />
               )}
@@ -90,93 +98,105 @@ export default function Home() {
                     {selectedBook.volumeInfo.pageCount ?? "?"} pages
                   </span>
                 </div>
-                <div className="flex flex-col items-center justify-around m-auto space-y-4">
-                  <motion.div
-                    initial={{ opacity: 0, x: -200 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ type: "spring", duration: 1, delay: 0 }}
-                  >
-                    <CountUp
-                      end={getReadingTime(
-                        selectedBook.volumeInfo.pageCount,
-                        selectedSpeed
-                      )}
-                      delay={0}
-                      useEasing={true}
-                      preserveValue
+                <div className="flex justify-around w-full h-full gap-6 py-4 sm:py-0">
+                  {selectedBook.volumeInfo.imageLinks?.thumbnail && (
+                    <div className="flex items-center justify-center sm:hidden">
+                      <img
+                        id="book-cover"
+                        src={selectedBook.volumeInfo.imageLinks?.thumbnail}
+                        alt={`${selectedBook.volumeInfo.title} cover`}
+                        className="z-10 object-contain w-full rounded-md sm:hidden shadow-black "
+                      />
+                    </div>
+                  )}
+                  <div className="flex flex-col items-center space-y-1 justify-evenly sm:justify-around sm:m-auto sm:space-y-4">
+                    <motion.div
+                      initial={{ opacity: 0, x: -200 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ type: "spring", duration: 1, delay: 0 }}
                     >
-                      {({ countUpRef }) => (
-                        <div>
-                          <span
-                            ref={countUpRef}
-                            className="text-xl font-bold"
-                          />
-                          <span> minutes to finish</span>
-                        </div>
-                      )}
-                    </CountUp>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -200 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ type: "spring", duration: 1, delay: 0.15 }}
-                  >
-                    <CountUp
-                      end={parseFloat(
-                        dayjs
-                          .duration(
-                            getReadingTime(
-                              selectedBook.volumeInfo.pageCount,
-                              selectedSpeed
-                            ),
-                            "minutes"
-                          )
-                          .asHours()
-                          .toFixed(2)
-                      )}
-                      decimals={2}
-                      delay={0}
-                      useEasing={true}
-                      preserveValue
+                      <CountUp
+                        end={getReadingTime(
+                          selectedBook.volumeInfo.pageCount,
+                          selectedSpeed
+                        )}
+                        delay={0}
+                        useEasing={true}
+                        preserveValue
+                      >
+                        {({ countUpRef }) => (
+                          <div>
+                            <span
+                              ref={countUpRef}
+                              className="text-xl font-bold"
+                            />
+                            <span> minutes to finish</span>
+                          </div>
+                        )}
+                      </CountUp>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, x: -200 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ type: "spring", duration: 1, delay: 0.15 }}
                     >
-                      {({ countUpRef }) => (
-                        <div>
-                          <span
-                            ref={countUpRef}
-                            className="text-xl font-bold"
-                          />
-                          <span> hours to finish</span>
-                        </div>
-                      )}
-                    </CountUp>
-                  </motion.div>
-                  <motion.div
-                    initial={{ opacity: 0, x: -200 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ type: "spring", duration: 1, delay: 0.3 }}
-                  >
-                    <CountUp
-                      end={getReadingTime(
-                        selectedBook.volumeInfo.pageCount,
-                        selectedSpeed,
-                        debouncedReadingTime
-                      )}
-                      decimals={2}
-                      delay={0}
-                      useEasing={true}
-                      preserveValue
+                      <CountUp
+                        end={parseFloat(
+                          dayjs
+                            .duration(
+                              getReadingTime(
+                                selectedBook.volumeInfo.pageCount,
+                                selectedSpeed
+                              ),
+                              "minutes"
+                            )
+                            .asHours()
+                            .toFixed(2)
+                        )}
+                        decimals={2}
+                        delay={0}
+                        useEasing={true}
+                        preserveValue
+                      >
+                        {({ countUpRef }) => (
+                          <div>
+                            <span
+                              ref={countUpRef}
+                              className="text-xl font-bold"
+                            />
+                            <span> hours to finish</span>
+                          </div>
+                        )}
+                      </CountUp>
+                    </motion.div>
+                    <motion.div
+                      initial={{ opacity: 0, x: -200 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ type: "spring", duration: 1, delay: 0.3 }}
                     >
-                      {({ countUpRef }) => (
-                        <div>
-                          <span
-                            ref={countUpRef}
-                            className="text-xl font-bold"
-                          />
-                          <span> days to finish</span>
-                        </div>
-                      )}
-                    </CountUp>
-                  </motion.div>
+                      <CountUp
+                        end={getReadingTime(
+                          selectedBook.volumeInfo.pageCount,
+                          selectedSpeed,
+                          debouncedReadingTime
+                        )}
+                        decimals={2}
+                        delay={0}
+                        useEasing={true}
+                        preserveValue
+                      >
+                        {({ countUpRef }) => (
+                          <div>
+                            <span
+                              ref={countUpRef}
+                              className="text-xl font-bold"
+                            />
+                            <span> days to finish</span>
+                          </div>
+                        )}
+                      </CountUp>
+                    </motion.div>
+                  </div>
                 </div>
                 <div className="flex flex-col self-end w-full space-y-1">
                   <span className="text-sm font-semibold text-right">

@@ -55,7 +55,17 @@ export const Input = ({
         </div>
       )}
       {books && isOpenDropown && (
-        <div className="absolute flex flex-col w-full h-[600px] z-10 p-2 space-y-2 overflow-y-auto rounded-md top-10 bg-stone-800">
+        <div
+          className={clsx(
+            "absolute flex flex-col w-full  z-10 p-2 space-y-2 overflow-y-auto rounded-md top-10 bg-stone-800",
+            !books.length ? "h-[100px]" : "h-[600px]"
+          )}
+        >
+          {!books.length && (
+            <div className="flex items-center justify-center h-full">
+              <span>{`Couldn't find your book :(`}</span>
+            </div>
+          )}
           {books.map((book, i) => (
             <div
               key={book.id}
@@ -63,7 +73,7 @@ export const Input = ({
             >
               {book.volumeInfo.pageCount && (
                 <div
-                  className="grid items-center w-full grid-cols-4 gap-6 p-1 px-6 rounded-md cursor-pointer hover:bg-stone-700"
+                  className="grid items-center w-full grid-cols-4 gap-6 p-1 px-2 rounded-md cursor-pointer sm:px-6 hover:bg-stone-700"
                   onClick={(e) => {
                     setSelectedBook(book);
                     setIsOpenDropdown(false);
@@ -78,7 +88,7 @@ export const Input = ({
                         book.volumeInfo.imageLinks?.smallThumbnail
                       }
                       alt={`${title} cover`}
-                      className="object-contain h-32 col-span-1 max-w-[83px]"
+                      className="object-contain h-32 col-span-1 max-w-[83px] w-full"
                       onError={(e) => console.log(e)}
                     />
                   ) : (
@@ -87,21 +97,21 @@ export const Input = ({
                       alt={`${title} cover`}
                       height={83}
                       width={128}
-                      className="object-cover col-span-1 h-[128px] max-w-[83px]"
+                      className="object-cover col-span-1 h-[128px] max-w-[83px] w-full"
                       onError={(e) => console.log(e)}
                     />
                   )}
                   <div className="flex flex-col col-span-3">
-                    <span className="text-lg font-bold">
+                    <span className="text-sm font-bold sm:text-lg">
                       {book.volumeInfo.title}
                     </span>
-                    <span className="text-sm">
+                    <span className="text-xs sm:text-sm">
                       {book.volumeInfo?.authors?.join(", ")}
                     </span>
-                    <span className="text-sm">
+                    <span className="text-xs sm:text-sm">
                       {book.volumeInfo.publishedDate}
                     </span>
-                    <span className="text-sm">
+                    <span className="text-xs sm:text-sm">
                       {book.volumeInfo.pageCount ?? "?"} pages
                     </span>
                   </div>
