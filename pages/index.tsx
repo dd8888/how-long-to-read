@@ -24,8 +24,8 @@ export default function Home() {
   const [readingTime, setReadingTime] = useState(60);
   const debouncedReadingTime = useDebounce(readingTime, 500);
   const [imageHeight, setImageHeight] = useState<number | undefined>(0);
+
   useEffect(() => {
-    console.log(document.getElementById("book-cover")?.clientHeight);
     const handleResize = () => {
       setImageHeight(document.getElementById("book-cover")?.clientHeight);
     };
@@ -42,8 +42,18 @@ export default function Home() {
         <title>How Long to Read</title>
         <meta
           name="description"
-          content="Find out how long it would take you to read a certain book"
+          content="Find out how long it will take you to read a book based on your reading speed and the length of the book."
         />
+        <meta name="keywords" content="reading, book, speed, time, estimate" />
+        <meta
+          property="og:title"
+          content="How Long Will It Take You to Read a Book?"
+        />
+        <meta
+          property="og:description"
+          content="Find out how long it will take you to read a book based on your reading speed and the length of the book."
+        />
+        <meta property="og:image" content="http://example.com/book-cover.jpg" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div
@@ -92,6 +102,7 @@ export default function Home() {
                   onError={(e) => console.log(e)}
                 />
               )}
+
               <div className="flex flex-col items-stretch h-full col-span-8 p-4 rounded-md bg-stone-100 text-stone-900">
                 <div className="flex flex-col space-y-1">
                   <span className="text-lg font-semibold text-center ">
@@ -215,11 +226,7 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <Options
-                setSelectedSpeed={setSelectedSpeed}
-                setReadingTime={setReadingTime}
-                readingTime={readingTime}
-              />
+              <Options setSelectedSpeed={setSelectedSpeed} />
             </div>
           )}
         </div>
@@ -257,4 +264,3 @@ export default function Home() {
     </div>
   );
 }
-//radios con diferentes animaciones, libro paginas de lento a rapido, para cuanto vas a leer al dia buscar algo

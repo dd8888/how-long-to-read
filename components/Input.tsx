@@ -31,6 +31,10 @@ export const Input = ({
       refetchOnReconnect: false,
     }
   );
+  const DEFAULT_IMAGE_SRC =
+    "https://archive.org/download/placeholder-image/placeholder-image.jpg";
+  const IMAGE_CLASSNAME = "object-contain h-32 col-span-1 max-w-[83px] w-full";
+  const IMAGE_ALT = `${title} cover`;
 
   return (
     <div
@@ -83,22 +87,20 @@ export const Input = ({
                 >
                   {book.volumeInfo.imageLinks?.thumbnail ? (
                     <img
-                      src={
-                        book.volumeInfo.imageLinks?.thumbnail ??
-                        book.volumeInfo.imageLinks?.smallThumbnail
-                      }
-                      alt={`${title} cover`}
-                      className="object-contain h-32 col-span-1 max-w-[83px] w-full"
-                      onError={(e) => console.log(e)}
+                      src={book.volumeInfo.imageLinks?.thumbnail}
+                      alt={IMAGE_ALT}
+                      className={IMAGE_CLASSNAME}
                     />
                   ) : (
                     <img
-                      src="https://archive.org/download/placeholder-image/placeholder-image.jpg"
-                      alt={`${title} cover`}
+                      src={
+                        book.volumeInfo.imageLinks?.smallThumbnail ??
+                        DEFAULT_IMAGE_SRC
+                      }
+                      alt={IMAGE_ALT}
                       height={83}
                       width={128}
-                      className="object-cover col-span-1 h-[128px] max-w-[83px] w-full"
-                      onError={(e) => console.log(e)}
+                      className={IMAGE_CLASSNAME}
                     />
                   )}
                   <div className="flex flex-col col-span-3">

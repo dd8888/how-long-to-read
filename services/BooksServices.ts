@@ -137,7 +137,6 @@ export const BooksServices = {
     const { data } = await axios.get(
       `https://www.googleapis.com/books/v1/volumes?q=${title}+intitle:${title}&orderBy=relevance&langRestrict=en&key=${process.env.NEXT_PUBLIC_GOOGLE_BOOKS_API_KEY}`
     );
-    if (data.totalItems > 0) return data.items;
-    return [];
+    return data.totalItems > 0 ? data.items : [];
   },
 };

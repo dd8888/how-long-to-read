@@ -4,12 +4,8 @@ import { BookSpinner } from "./BookSpinner";
 
 export const Options = ({
   setSelectedSpeed,
-  setReadingTime,
-  readingTime,
 }: {
   setSelectedSpeed: Dispatch<ReadingSpeed>;
-  setReadingTime: Dispatch<number>;
-  readingTime: number;
 }) => {
   return (
     <div className="flex flex-col items-center justify-center col-span-full">

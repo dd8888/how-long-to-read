@@ -1,5 +1,7 @@
 import { ReadingSpeed } from "../../pages";
 
+const WORDS_PER_PAGE = 300;
+
 export const getReadingTime = (
   pages: number,
   readingSpeed?: ReadingSpeed,
@@ -17,11 +19,8 @@ export const getReadingTime = (
         return 300;
     }
   };
-  const wordsPerPage = 300; //average
-  const words = pages * wordsPerPage;
-  const timeToRead = Math.ceil(words / getWpm());
-  if (averageReadingTime) return timeToRead / averageReadingTime;
-  return timeToRead;
+  const timeToRead = Math.ceil((pages * WORDS_PER_PAGE) / getWpm());
+  return averageReadingTime ? timeToRead / averageReadingTime : timeToRead;
 };
 
 // Third-grade students = 150 words per minute (wpm)
